@@ -1,6 +1,8 @@
 # daytripadvisor
 Project Daytrip Adviosr
+
 Group WLJ
+
 Configuration:
   1. Install Google Chrome Browser
   2. Install extentsion: Allow-Control-Allow-Origin: * 
