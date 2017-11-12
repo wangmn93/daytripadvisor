@@ -9,15 +9,15 @@
     </style>
       <title>Daytrip Advisor</title>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-      <script src="mediawiki_wrapper.js" type="text/javascript"></script>
-      <script src="openweathermap_wrapper.js" type="text/javascript"></script>
-      <script src="googleplace_wrapper.js" type="text/javascript"></script>
+      <script src="js/mediawiki_wrapper.js" type="text/javascript"></script>
+      <script src="js/openweathermap_wrapper.js" type="text/javascript"></script>
+      <script src="js/googleplace_wrapper.js" type="text/javascript"></script>
       <script> 
           var service;
           var map;
           var infowindow;
           var placeSearch, autocomplete;
-          
+     //clean results     
     function clean() {
         document.getElementById("weather").innerHTML = "";
         document.getElementById("information").innerHTML = "";
@@ -92,16 +92,12 @@
         });
       }
           
-//    function getR(){
-//        getRestaurants(service);
-//    }
-          //call all initialization func 
+          //call all initialization functions
           function initialization() {
               initMap();
               initAutocomplete();
           }
     </script>
-<!--      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC6pHIUUibmZz5iFCQTffRZpy6ihbkPjZk&libraries=places&callback=initMap"></script>-->
   </head>
   <body>
       
