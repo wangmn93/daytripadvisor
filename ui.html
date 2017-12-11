@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            #map {
+                height: 700px;
+                width: 100%;
+            }
+        </style>
+        <title>Bootstrap Example</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script>
+            function initMap() {
+                var pyrmont = {lat: -33.867, lng: 151.195};
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: pyrmont,
+                    zoom: 15
+                });
+            }
+        </script>
+        <style>
+            /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
+            .row.content {height: 1500px}
+
+            /* Set gray background color and 100% height */
+            .sidenav {
+                background-color: #f1f1f1;
+                height: 100%;
+            }
+
+            /* Set black background color, white text and some padding */
+            footer {
+                background-color: #555;
+                color: white;
+                padding: 15px;
+            }
+
+            /* On small screens, set height to 'auto' for sidenav and grid */
+            @media screen and (max-width: 767px) {
+                .sidenav {
+                    height: auto;
+                    padding: 15px;
+                }
+                .row.content {height: auto;} 
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="container-fluid">
+            <div class="row content">
+                <div class="col-sm-3 sidenav">
+                    <h4>City info</h4>
+                    <button onclick="$('#weather').show()">show weather</button>
+                    <button onclick="$('#weather').hide()">hide weather</button>
+                     <h3>Daytrip Advisor</h3>
+        <div id="locationField" class="form-group">
+            <input id="autocomplete" placeholder="Enter your address"
+                   onFocus="geolocate()" type="text" class="form-control"></input>
+        <button type="button" onclick="geocode(document.getElementById('autocomplete').value,[recenter_map,request_sightseeings,request_restaurants])" class="btn btn-primary">Start</button>
+        </div>
+    <div id="map"></div>
+    <div id="weather"></div>
+    <div id="info"></div>
+    <div class="container">
+        <button type="button" onclick="geocode('stuttgart',[recenter_map,request_sightseeings,request_restaurants])" class="btn btn-danger">Test</button>
+        <button type="button" onclick="getWeather()" class="btn btn-primary">Get weather forecast</button>
+        <button type="button" onclick="getInfoBox('stuttgart')" class="btn btn-primary">Get basic information</button>
+    </div>
+                </div>
+
+                <div class="col-sm-9">
+                    <div id="map"></div>
+                    <div id="weather">
+                        This div will contain weather forecast.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="container-fluid">
+            <p>Footer Text</p>
+        </footer>
+        <script async defer
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC6pHIUUibmZz5iFCQTffRZpy6ihbkPjZk&libraries=places&callback=initMap">
+        </script>
+    </body>
+</html>
