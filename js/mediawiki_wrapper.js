@@ -18,8 +18,8 @@ function getInfoBox(city, callback=null) {
             var jsonResponse = JSON.parse(xhttp.responseText);
             var div = document.createElement('div');
             div.innerHTML = jsonResponse["parse"]["text"]["*"];
-//            var isInsideGeosearch = _.intersection(geosearch_id,[jsonResponse["parse"]["pageid"]]).length == 1;
-//            console.log("isInsideGeosearch"+isInsideGeosearch);
+            //            var isInsideGeosearch = _.intersection(geosearch_id,[jsonResponse["parse"]["pageid"]]).length == 1;
+            //            console.log("isInsideGeosearch"+isInsideGeosearch);
             var element = div.firstChild;
             var infoBox = element.getElementsByClassName("infobox geography vcard");
             if(infoBox.length>=1) {
@@ -34,7 +34,7 @@ function getInfoBox(city, callback=null) {
                     hrefs[i].setAttribute("href", newRef);
                 }
                 //add element to html
-                document.getElementById("info").appendChild(infoBox);
+                document.getElementById("info").innerHTML = infoBox.outerHTML;;
 
                 //return local schema !!!
 
@@ -50,7 +50,7 @@ function getInfoBox(city, callback=null) {
 
 }
 
-//request information box by city name
+//request information box by page id
 function getInfoBoxById(id, callback=null) {
 
     var xhttp = new XMLHttpRequest();
@@ -60,8 +60,8 @@ function getInfoBoxById(id, callback=null) {
             var jsonResponse = JSON.parse(xhttp.responseText);
             var div = document.createElement('div');
             div.innerHTML = jsonResponse["parse"]["text"]["*"];
-//            var isInsideGeosearch = _.intersection(geosearch_id,[jsonResponse["parse"]["pageid"]]).length == 1;
-//            console.log("isInsideGeosearch"+isInsideGeosearch);
+            //            var isInsideGeosearch = _.intersection(geosearch_id,[jsonResponse["parse"]["pageid"]]).length == 1;
+            //            console.log("isInsideGeosearch"+isInsideGeosearch);
             var element = div.firstChild;
             var infoBox = element.getElementsByClassName("infobox geography vcard");
             if(infoBox.length>=1) {
@@ -78,10 +78,10 @@ function getInfoBoxById(id, callback=null) {
                 //add element to html
                 document.getElementById("info").innerHTML = "";
                 document.getElementById("info").appendChild(infoBox);
-                
+
                 //return local schema !!!
                 if(callback!=null) {
-                    
+
                 }
 
             }else{
@@ -117,7 +117,7 @@ function search(city) {
             search_title = title;
             search_flag = true;
             if(search_flag && geosearch_flag) intersect_result();
-//            document.getElementById("searchresult").innerHTML = searchresult;
+            //            document.getElementById("searchresult").innerHTML = searchresult;
 
         }
     };
@@ -135,7 +135,7 @@ function geosearch(jsonResponse) {
         if (this.readyState == 4 && this.status == 200) {
             //convert response to json object
             var jsonResponse = JSON.parse(xhttp.responseText);
-//            console.log(jsonResponse);
+            //            console.log(jsonResponse);
             var searchresult = "";
             var id = [];
             var title = [];
@@ -150,7 +150,7 @@ function geosearch(jsonResponse) {
             geosearch_title = title;
             geosearch_flag = true;
             if(search_flag && geosearch_flag) intersect_result();
-//            document.getElementById("geosearchresult").innerHTML = searchresult;
+            //            document.getElementById("geosearchresult").innerHTML = searchresult;
 
         }
     };
@@ -175,38 +175,72 @@ function intersect_result() {
     var common_titles = _.intersection(search_title,geosearch_title);
     var similarity = [];
     var similarity2 = [];
-//    console.log(common_ids);
-//    console.log(common_titles);
-//    console.log(found_locality);
-    
+    //    console.log(common_ids);
+    //    console.log(common_titles);
+    //    console.log(found_locality);
+
     for(var i in geosearch_title) {
-//        console.log(geosearch_title[i]+", "+geosearch_title[i].levenstein_similarity(found_locality));
+        //        console.log(geosearch_title[i]+", "+geosearch_title[i].levenstein_similarity(found_locality));
         similarity2.push({"id":geosearch_id[i],"title":geosearch_title[i],"score":geosearch_title[i].levenstein_similarity(found_locality)});    
     }
-    
+
     for(var i in common_titles) {
-//        console.log(common_titles[i]+", "+common_titles[i].levenstein_similarity(found_locality));
+        //        console.log(common_titles[i]+", "+common_titles[i].levenstein_similarity(found_locality));
         similarity.push({"id":common_ids[i],"title":common_titles[i],"score":common_titles[i].levenstein_similarity(found_locality)});
     }
-//    var locality = findLocality(jsonResponse);
+    //    var locality = findLocality(jsonResponse);
     similarity.sort(function(a, b) {
-    return parseFloat(b.score) - parseFloat(a.score);
-});
+        return parseFloat(b.score) - parseFloat(a.score);
+    });
     similarity2.sort(function(a, b) {
-    return parseFloat(b.score) - parseFloat(a.score);
-});
-//    console.log(similarity);
-//    console.log(similarity2);
+        return parseFloat(b.score) - parseFloat(a.score);
+    });
+    console.log(similarity);
+    console.log(similarity2);
+
     if(similarity.length>0) {
-        if(similarity[0].score==1)
+        if(similarity[0].score==1){
             getInfoBoxById(similarity[0].id);
-        else
-            display_possible_pages(similarity);//handle non-unique
+        }else{
+            document.getElementById("info").innerHTML = "<b>Possible wikipedia page</b><br>";
+
+            for(var i in similarity) {
+
+                //                console.log(similarity[i].id);
+                //                var li = document.createElement('A');
+                //                li.innerHTML = similarity[i].id+","+similarity[i].title;
+                //                var id = similarity[i].id;
+                //                li.onclick = function() {
+                //                    getInfoBoxById(id);
+                //                };
+                //                document.getElementById("possibleresult").appendChild(li);
+                document.getElementById("info").innerHTML += "<a onclick='getInfoBoxById("+similarity[i].id+")'>"+similarity[i].id+","+similarity[i].title+"</a><br>";
+                if(i>5) break;
+                
+            }
+
+        }
+
+        //            display_possible_pages(similarity);//handle non-unique
     }else{
         //no intersection
-            display_possible_pages(similarity2);//handle non-unique
+        //            display_possible_pages(similarity2);//handle non-unique
+        document.getElementById("info").innerHTML = "<b>Possible wikipedia page</b><br>";
+        
+        for(var i in similarity2) {
+            //                var li = document.createElement('A');
+            //                li.innerHTML = similarity2[i].id+","+similarity2[i].title;
+            //                li.onclick = function() {
+            //                    getInfoBoxById(similarity2[i].id);
+            //                };
+            //                document.getElementById("possibleresult").appendChild(li);
+//            document.getElementById("info").innerHTML
+            document.getElementById("info").innerHTML += "<a onclick='getInfoBoxById("+similarity2[i].id+")'>"+similarity2[i].id+","+similarity2[i].title+"</a><br>";
+            if(i>9) break;
+
+        }
     }
-    
+
 }
 
 

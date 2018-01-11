@@ -2,6 +2,34 @@
 <html>
     <head>
         <style>
+            /* Style the tab buttons */
+            .tablink {
+                background-color: #555;
+                color: white;
+                float: left;
+                border: none;
+                outline: none;
+                cursor: pointer;
+                padding: 14px 16px;
+                font-size: 17px;
+                width: 30%;
+            }
+
+            /* Change background color of buttons on hover */
+            .tablink:hover {
+                background-color: #777;
+            }
+
+            /* Set default styles for tab content */
+            .tabcontent {
+                color: white;
+                display: none;
+                padding: 50px;
+                text-align: center;
+            }
+
+
+
             #map {
                 height: 800px;
                 width: 100%;
@@ -22,7 +50,7 @@
                 background-color: #555;
                 color: white;
                 padding: 20px;
-                
+
             }
 
             /* On small screens, set height to 'auto' for sidenav and grid */
@@ -36,7 +64,7 @@
 
             #webform {
                 width: 30%;
-                height: 300px;
+                height: 600px;
                 position: absolute;
                 top: 25px;
                 left: 35%;
@@ -46,24 +74,31 @@
                 border: 2px solid #a1a1a1;
 
             }
-            
-            #weatherchart {
-                width: 40%;
-                height: 300px;
+
+            #weatherbox {
+                width: 50%;
+                height: 620px;
                 position: absolute;
-                top: 500px;
+                top: 100px;
                 left: 30%;
                 background-color: #f2f2f2;
                 z-index: 10;
                 border-radius: 5px;
                 border: 2px solid #a1a1a1;
-                visibility: hidden; 
+                                visibility: hidden; 
 
             }
             
+            #weatherchart {
+               
+                height: 580px;
+            
+
+            }
+
             #searchresult {
                 width: 30%;
-                height: 300px;
+                height: 400px;
                 position: absolute;
                 top: 50px;
                 left: 60%;
@@ -71,10 +106,10 @@
                 z-index: 10;
                 border-radius: 5px;
                 border: 2px solid #a1a1a1;
-                 visibility: hidden; 
+                visibility: hidden; 
             }
-            
-             #geosearchresult {
+
+            #geosearchresult {
                 width: 30%;
                 height: 300px;
                 position: absolute;
@@ -84,13 +119,14 @@
                 z-index: 10;
                 border-radius: 5px;
                 border: 2px solid #a1a1a1;
-                  visibility: hidden; 
+                visibility: hidden; 
             }
-            
+
         </style>
         <title>Daytrip Advisor</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="http://underscorejs.org/underscore-min.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script>
@@ -98,7 +134,7 @@
             var map;
             var infowindow;
             var placeSearch, autocomplete;
-
+            google.charts.load('current', {'packages':['corechart','table']});
             function initAutocomplete() {
                 //-----------------auto complete---------------------
                 // Create the autocomplete object, restricting the search to geographical
@@ -146,15 +182,40 @@
                 initMap();
                 initAutocomplete();
             }
+
+            function openCity(cityName, elmnt, color) {
+                // Hide all elements with class="tabcontent" by default */
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+
+                // Remove the background color of all tablinks/buttons
+                tablinks = document.getElementsByClassName("tablink");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].style.backgroundColor = "";
+                }
+
+                // Show the specific tab content
+                document.getElementById(cityName).style.display = "block";
+
+                // Add the specific color to the button used to open the tab content
+                elmnt.style.backgroundColor = color;
+            }
+
+            // Get the element with id="defaultOpen" and click on it
+            //            document.getElementById("defaultOpen").click();
         </script>
         <script src="js/lev.js" type="text/javascript"></script>
         <script src="js/mediawiki_wrapper.js" type="text/javascript"></script>
         <script src="js/openweathermap_wrapper.js" type="text/javascript"></script>
-        <script src="js/geo.js" type="text/javascript"></script>
+
         <script src="js/googleplace_wrapper.js" type="text/javascript"></script>
+        <script src="js/geo.js" type="text/javascript"></script>
         <script src="js/yelp_wrapper.js" type="text/javascript"></script>
         <script src="js/baisc_function.js" type="text/javascript"></script>
-        
+
     </head>
     <body>
         <nav class="navbar navbar-inverse">
@@ -164,9 +225,8 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">Page 1</a></li>
-                    <li><a href="#">Page 2</a></li>
-                    <li><a href="#">Page 3</a></li>
+                    <li><a href="#" onclick="document.getElementById('webform').style.visibility='visible'">Web form</a></li>
+                
                 </ul>
             </div>
         </nav>
@@ -174,77 +234,133 @@
         <div class="container-fluid" style="position:relative ">
             <div class="row content" style="position:relative ">
                 <div id="webform">
-                    <h4>Web form</h4>
+                    <h4>Web form</h4><a onclick="document.getElementById('webform').style.visibility='hidden'">close</a>
                     <div id="locationField" class="form-group">
                         <input id="autocomplete" placeholder="Enter your address"
                                onFocus="geolocate()" type="text" class="form-control">
-                        <input id="date" type="date">
+                        <!--                        <input id="date" type="date">-->
                         <form action="">
-  <input type="checkbox" name="price" value="0"> $<br>
-  <input type="checkbox" name="price" value="1"> $$<br>
-  <input type="checkbox" name="price" value="2"> $$$<br>
-  <input type="checkbox" name="price" value="3"> $$$$
-</form>
-                    <button type="button" onclick="geocode(document.getElementById('autocomplete').value,[recenter_map,request_sightseeings,request_restaurants,geosearch,performSrsearch]);" class="btn btn-primary">Start</button>
-                    <button type="button" onclick="geocode(document.getElementById('autocomplete').value,[searchnearbyByAddress])" class="btn btn-primary">Recommend</button>
-                        <button type="button" onclick="auto_searchnearby()" class="btn btn-primary">Auto Recommend</button>
+                            <b>Price</b><br>
+                            <input type="checkbox" name="price" class="price_check" value="1"> $<br>
+                            <input type="checkbox" name="price" class="price_check" value="2"> $$<br>
+                            <input type="checkbox" name="price" class="price_check" value="3"> $$$<br>
+                            <input type="checkbox" name="price" class="price_check" value="4"> $$$$<br>
+                            <b>Poplular categories</b><br>
+                            <input type="checkbox" name="categories" class="category_check" value="chinese"> Chinese<br>
+                            <input type="checkbox" name="categories" class="category_check" value="sushi"> Sushi bar<br>
+                            
+                            <button type="button" onclick="document.getElementById('searchresult').style.visibility='visible';" class="btn btn-primary">Full categories</button>
+<!--                            <button type="button" onclick="display_full_categories();document.getElementById('searchresult').style.visibility='visible';" class="btn btn-primary">Full categories2</button>-->
+                            
+                        </form>
+<br>
+                        <button type="button" onclick="if(document.getElementById('autocomplete').value==''){alert('please input address');}else{document.getElementById('webform').style.visibility='hidden';document.getElementById('restaurants').innerHTML = '';document.getElementById('sightseeings').innerHTML = '';geocode(document.getElementById('autocomplete').value,[recenter_map,request_sightseeings,request_restaurants,request_weather,geosearch,performSrsearch]);}" class="btn btn-primary">Start</button>
+                        <button type="button" onclick="if(document.getElementById('autocomplete').value==''){alert('please input address');}geocode(document.getElementById('autocomplete').value,[searchnearbyByAddress])" class="btn btn-primary">Recommend cities</button>
+                        <button type="button" onclick="auto_searchnearby()" class="btn btn-primary">Auto Recommend cities</button>
+                    </div>
+                    <h4>Recommendation</h4>
+                    <div id="recommendation"></div>
+                    <div id="possibleresult"></div>
                 </div>
-                <div id="recommendation"></div>
-                <div id="possibleresult"></div>
-            </div>
-            <div id="weatherchart">
-                This div will contain weather forecast chart.<a href="#">close</a>
-            </div>
-            <div id="searchresult">
-                This div will contain search result from wiki.<a href="#">close</a>
-            </div>
-            <div id="geosearchresult">
-                This div will contain geosearch result from wiki.<a href="#">close</a>
-            </div>
-                
-            <div class="col-sm-3 sidenav">
-                <h4>City info</h4>
-<!--                <button onclick="$('#weather').show()">show weather</button>-->
-<!--                <button onclick="$('#weather').hide()">hide weather</button>-->
-
-
-                <div class="container">
-<!--                    <button type="button" onclick="geocode('stuttgart',[recenter_map,request_sightseeings,request_restaurants,geosearch，performSrsearch])" class="btn btn-danger">Test</button>-->
-                    <button type="button" value="Refresh Page" onClick="window.location.reload()">Refresh</button><br>
-                    <button type="button" onclick="getWeather()" class="btn btn-primary">Get weather forecast</button>
-<!--                    <button type="button" onclick="getToken()" class="btn btn-primary">Get token</button><br>-->
-                    <button type="button" onclick="search_restaurants(48.7758, 9.1829,5000)" class="btn btn-primary">Search restaurants</button><br>
-                    <button type="button" id="more" class="btn btn-primary" disabled>More(RESTAURANT)</button><br>
-                    <button type="button" id="more2" class="btn btn-primary" disabled>More(SIGHTSEEING)</button><br>
-                    <button type="button" id="more3" class="btn btn-primary" disabled>More(YELP)</button><br>
-                    <button type="button" onclick="geocode('stuttgart',[findLocality,findState,findCountry])" class="btn btn-primary">Find address component</button>
-                    <button type="button" onclick="search_place('China Garden Restaurant',48.47,9.11)" class="btn btn-primary">Find restaurant</button>
-                    <button type="button" onclick="getBusiness('gary-danko-san-francisco')" class="btn btn-primary">Get business</button><br>
-<!--                    <button type="button" onclick="geocode('stuttgart',[look_up])" class="btn btn-primary">Look up</button>-->
-<!--                    <button type="button" onclick="phone_search('+49071112859620')" class="btn btn-primary">Look up</button>-->
-<!--                    <button type="button" onclick="geocode('stuttgart',[geosearch,performSrsearch])" class="btn btn-primary">Test joint</button>-->
-<!--                    <button type="button" onclick="searchnearby(48.47,9.11)" class="btn btn-primary">Search nearby</button>-->
-<!--                    <button type="button" onclick="auto_searchnearby()" class="btn btn-primary">Auto Search nearby</button><br>-->
-<!--                    <button type="button" onclick="geocode('stuttgart',[searchnearbyByAddress])" class="btn btn-primary">Search nearby by address</button>-->
-<!--                    <button type="button" onclick="geocode('stuttgart',[findLocality])" class="btn btn-primary">Find locality</button>-->
+                <div >
+                   <div id="weatherbox">
+                        <a href="#" id="daily" onclick="">Daily</a>
+                    <a href="#" id="3_h" onclick="">3 Hour</a>
+                    <a href="#" onclick="document.getElementById('weatherbox').style.visibility='hidden'">close</a>
+                    <div id="weatherchart">
+                    
+                    </div>
+                    </div>
                     
                 </div>
-                <div id="info"></div>  
-                <div id="weather">
-                This div will contain weather forecast.
-            </div>
-            </div>
+<!--
+                <div id="searchresult">
+                    This div will contain search result from wiki.<a href="#" onclick="document.getElementById('searchresult').style.visibility='hidden'">close</a>
+                </div>
 
-            <div class="col-sm-9">
-                <div id="map"></div>
+-->
+                <div id="searchresult"><b>Full categories</b><a onclick="document.getElementById('searchresult').style.visibility='hidden'">close</a><br><input type="checkbox" name="price" class="category_check" value="afghani"> Afghan|<input type="checkbox" name="price" class="category_check" value="african"> African|<input type="checkbox" name="price" class="category_check" value="arabian"> Arabian|<input type="checkbox" name="price" class="category_check" value="argentine"> Argentine|<input type="checkbox" name="price" class="category_check" value="asianfusion"> Asian Fusion|<input type="checkbox" name="price" class="category_check" value="australian"> Australian|<input type="checkbox" name="price" class="category_check" value="austrian"> Austrian|<input type="checkbox" name="price" class="category_check" value="bangladeshi"> Bangladeshi|<input type="checkbox" name="price" class="category_check" value="basque"> Basque|<input type="checkbox" name="price" class="category_check" value="bbq"> Barbeque|<input type="checkbox" name="price" class="category_check" value="belgian"> Belgian|<input type="checkbox" name="price" class="category_check" value="bistros"> Bistros|<input type="checkbox" name="price" class="category_check" value="brasseries"> Brasseries|<input type="checkbox" name="price" class="category_check" value="brazilian"> Brazilian|<input type="checkbox" name="price" class="category_check" value="breakfast_brunch"> Breakfast &amp; Brunch|<input type="checkbox" name="price" class="category_check" value="british"> British|<input type="checkbox" name="price" class="category_check" value="buffets"> Buffets|<input type="checkbox" name="price" class="category_check" value="bulgarian"> Bulgarian|<input type="checkbox" name="price" class="category_check" value="burgers"> Burgers|<input type="checkbox" name="price" class="category_check" value="burmese"> Burmese|<input type="checkbox" name="price" class="category_check" value="cafes"> Cafes|<input type="checkbox" name="price" class="category_check" value="cafeteria"> Cafeteria|<input type="checkbox" name="price" class="category_check" value="cajun"> Cajun/Creole|<input type="checkbox" name="price" class="category_check" value="cambodian"> Cambodian|<input type="checkbox" name="price" class="category_check" value="caribbean"> Caribbean|<input type="checkbox" name="price" class="category_check" value="chicken_wings"> Chicken Wings|<input type="checkbox" name="price" class="category_check" value="chickenshop"> Chicken Shop|<input type="checkbox" name="price" class="category_check" value="chinese"> Chinese|<input type="checkbox" name="price" class="category_check" value="creperies"> Creperies|<input type="checkbox" name="price" class="category_check" value="cuban"> Cuban|<input type="checkbox" name="price" class="category_check" value="delis"> Delis|<input type="checkbox" name="price" class="category_check" value="diners"> Diners|<input type="checkbox" name="price" class="category_check" value="dinnertheater"> Dinner Theater|<input type="checkbox" name="price" class="category_check" value="ethiopian"> Ethiopian|<input type="checkbox" name="price" class="category_check" value="filipino"> Filipino|<input type="checkbox" name="price" class="category_check" value="fishnchips"> Fish &amp; Chips|<input type="checkbox" name="price" class="category_check" value="fondue"> Fondue|<input type="checkbox" name="price" class="category_check" value="food_court"> Food Court|<input type="checkbox" name="price" class="category_check" value="foodstands"> Food Stands|<input type="checkbox" name="price" class="category_check" value="french"> French|<input type="checkbox" name="price" class="category_check" value="gamemeat"> Game Meat|<input type="checkbox" name="price" class="category_check" value="gastropubs"> Gastropubs|<input type="checkbox" name="price" class="category_check" value="german"> German|<input type="checkbox" name="price" class="category_check" value="gluten_free"> Gluten-Free|<input type="checkbox" name="price" class="category_check" value="greek"> Greek|<input type="checkbox" name="price" class="category_check" value="guamanian"> Guamanian|<input type="checkbox" name="price" class="category_check" value="halal"> Halal|<input type="checkbox" name="price" class="category_check" value="hawaiian"> Hawaiian|<input type="checkbox" name="price" class="category_check" value="himalayan"> Himalayan/Nepalese|<input type="checkbox" name="price" class="category_check" value="honduran"> Honduran|<input type="checkbox" name="price" class="category_check" value="hotdog"> Hot Dogs|<input type="checkbox" name="price" class="category_check" value="hotdogs"> Fast Food|<input type="checkbox" name="price" class="category_check" value="hungarian"> Hungarian|<input type="checkbox" name="price" class="category_check" value="indonesian"> Indonesian|<input type="checkbox" name="price" class="category_check" value="indpak"> Indian|<input type="checkbox" name="price" class="category_check" value="international"> International|<input type="checkbox" name="price" class="category_check" value="irish"> Irish|<input type="checkbox" name="price" class="category_check" value="italian"> Italian|<input type="checkbox" name="price" class="category_check" value="japanese"> Japanese|<input type="checkbox" name="price" class="category_check" value="kebab"> Kebab|<input type="checkbox" name="price" class="category_check" value="korean"> Korean|<input type="checkbox" name="price" class="category_check" value="kosher"> Kosher|<input type="checkbox" name="price" class="category_check" value="laotian"> Laotian|<input type="checkbox" name="price" class="category_check" value="latin"> Latin American|<input type="checkbox" name="price" class="category_check" value="malaysian"> Malaysian|<input type="checkbox" name="price" class="category_check" value="mediterranean"> Mediterranean|<input type="checkbox" name="price" class="category_check" value="mexican"> Mexican|<input type="checkbox" name="price" class="category_check" value="mideastern"> Middle Eastern|<input type="checkbox" name="price" class="category_check" value="modern_european"> Modern European|<input type="checkbox" name="price" class="category_check" value="mongolian"> Mongolian|<input type="checkbox" name="price" class="category_check" value="moroccan"> Moroccan|<input type="checkbox" name="price" class="category_check" value="nicaraguan"> Nicaraguan|<input type="checkbox" name="price" class="category_check" value="noodles"> Noodles|<input type="checkbox" name="price" class="category_check" value="pakistani"> Pakistani|<input type="checkbox" name="price" class="category_check" value="panasian"> Pan Asian|<input type="checkbox" name="price" class="category_check" value="persian"> Persian/Iranian|<input type="checkbox" name="price" class="category_check" value="peruvian"> Peruvian|<input type="checkbox" name="price" class="category_check" value="pizza"> Pizza|<input type="checkbox" name="price" class="category_check" value="polish"> Polish|<input type="checkbox" name="price" class="category_check" value="portuguese"> Portuguese|<input type="checkbox" name="price" class="category_check" value="raw_food"> Live/Raw Food|<input type="checkbox" name="price" class="category_check" value="russian"> Russian|<input type="checkbox" name="price" class="category_check" value="salad"> Salad|<input type="checkbox" name="price" class="category_check" value="sandwiches"> Sandwiches|<input type="checkbox" name="price" class="category_check" value="scandinavian"> Scandinavian|<input type="checkbox" name="price" class="category_check" value="seafood"> Seafood|<input type="checkbox" name="price" class="category_check" value="singaporean"> Singaporean|<input type="checkbox" name="price" class="category_check" value="soup"> Soup|<input type="checkbox" name="price" class="category_check" value="spanish"> Spanish|<input type="checkbox" name="price" class="category_check" value="srilankan"> Sri Lankan|<input type="checkbox" name="price" class="category_check" value="steak"> Steakhouses|<input type="checkbox" name="price" class="category_check" value="sushi"> Sushi Bars|<input type="checkbox" name="price" class="category_check" value="syrian"> Syrian|<input type="checkbox" name="price" class="category_check" value="taiwanese"> Taiwanese|<input type="checkbox" name="price" class="category_check" value="tapas"> Tapas Bars|<input type="checkbox" name="price" class="category_check" value="tapasmallplates"> Tapas/Small Plates|<input type="checkbox" name="price" class="category_check" value="tex-mex"> Tex-Mex|<input type="checkbox" name="price" class="category_check" value="thai"> Thai|<input type="checkbox" name="price" class="category_check" value="tradamerican"> American (Traditional)|<input type="checkbox" name="price" class="category_check" value="turkish"> Turkish|<input type="checkbox" name="price" class="category_check" value="ukrainian"> Ukrainian|<input type="checkbox" name="price" class="category_check" value="vegan"> Vegan|<input type="checkbox" name="price" class="category_check" value="vegetarian"> Vegetarian|<input type="checkbox" name="price" class="category_check" value="vietnamese"> Vietnamese|<input type="checkbox" name="price" class="category_check" value="waffles"> Waffles|<input type="checkbox" name="price" class="category_check" value="wok"> Wok|</div>
+                <div id="geosearchresult">
+                    This div will contain geosearch result from wiki.<a href="#">close</a>
+                </div>
+
+                <div class="col-sm-3 sidenav">
+                    <button type="button" value="Refresh Page" onClick="window.location.reload()" class="btn btn-primary">Refresh</button>
+                        <button type="button" onClick="document.getElementById('weatherbox').style.visibility='visible';" class="btn btn-primary">Get weather forecast</button><br>
+                    <h4>City info</h4>
+                    <!--                <button onclick="$('#weather').show()">show weather</button>-->
+                    <!--                <button onclick="$('#weather').hide()">hide weather</button>-->
+
+
+                    <div class="container">
+                        <!--                    <button type="button" onclick="geocode('stuttgart',[recenter_map,request_sightseeings,request_restaurants,geosearch，performSrsearch])" class="btn btn-danger">Test</button>-->
+                        
+                        <!--                        <button type="button" onclick="getWeather()" class="btn btn-primary">Get weather forecast</button>-->
+                        <!--                    <button type="button" onclick="getToken()" class="btn btn-primary">Get token</button><br>-->
+                        <!--                        <button type="button" onclick="search_restaurants(48.7758, 9.1829,5000)" class="btn btn-primary">Search restaurants</button><br>-->
+                        <!--                        <button type="button" id="more" class="btn btn-primary" disabled>More(RESTAURANT)</button><br>-->
+                        <!--                        <button type="button" id="more2" class="btn btn-primary" disabled>More(SIGHTSEEING)</button><br>-->
+                        <!--                        <br>-->
+                        <!--                        <button type="button" onclick="geocode('stuttgart',[findLocality,findState,findCountry])" class="btn btn-primary">Find address component</button>-->
+                        <!--                        <button type="button" onclick="search_place('China Garden Restaurant',48.47,9.11)" class="btn btn-primary">Find restaurant</button>-->
+                        <!--                        <button type="button" onclick="getBusiness('gary-danko-san-francisco')" class="btn btn-primary">Get business</button><br>-->
+                        <!--                        <button type="button" onclick="getReviews('gary-danko-san-francisco')" class="btn btn-primary">Get reviews</button><br>-->
+                        <!--                    <button type="button" onclick="geocode('stuttgart',[look_up])" class="btn btn-primary">Look up</button>-->
+                        <!--                        <button type="button" onclick="collect_check_box(1,2,3)" class="btn btn-primary">Collect check box</button>-->
+                        <!--                    <button type="button" onclick="phone_search('+49071112859620')" class="btn btn-primary">Look up</button>-->
+                        <!--                    <button type="button" onclick="geocode('stuttgart',[geosearch,performSrsearch])" class="btn btn-primary">Test joint</button>-->
+                        <!--                    <button type="button" onclick="searchnearby(48.47,9.11)" class="btn btn-primary">Search nearby</button>-->
+                        <!--                    <button type="button" onclick="auto_searchnearby()" class="btn btn-primary">Auto Search nearby</button><br>-->
+                        <!--                    <button type="button" onclick="geocode('stuttgart',[searchnearbyByAddress])" class="btn btn-primary">Search nearby by address</button>-->
+                        <!--                    <button type="button" onclick="geocode('stuttgart',[findLocality])" class="btn btn-primary">Find locality</button>-->
+
+                    </div>
+                    <div id="info"></div>  
+<!--
+                    <div id="weather">
+                        This div will contain weather forecast.
+                    </div>
+-->
+                </div>
+
+                <div class="col-sm-6">
+                    <div id="map"></div>
+
+                </div>
+                <div class="col-sm-3">
+                    <button type="button" id="more3" class="btn btn-primary" disabled style="position:absolute;top:10px;right:10px;">More(YELP)</button>
+                    <div class="sidenav">
+                        <button class="tablink" onclick="openCity('sightseeings', this, 'blue')" id="defaultOpen">Sightseeing</button>
+                        <button class="tablink" onclick="openCity('restaurants', this, 'orange')">Restaurants</button>
+
+                        <ul  id="sightseeings"class="tabcontent">
+
+                        </ul>
+
+                        <table  id="restaurants" class="tabcontent">
+<!--
+                            <tr>
+                                <th>Name</th>
+                                <th>Categories</th>
+                                <th>Price</th>
+                            </tr>
+-->
+                        </table>
+                    </div>
+
+
+
+
+
+                </div>
 
             </div>
         </div>
-        
+
         </div>
 
     <footer class="container-fluid">
-        <p>Footer Text</p>
+        <center><p>Group WLJ: Mengnan Wang, Zheyan Liu, Meng Jin</p> </center>
     </footer>
     <script async defer
             src="https://maps.googleapis.com/maps/api/js?language=en&key=AIzaSyC6pHIUUibmZz5iFCQTffRZpy6ihbkPjZk&libraries=places&callback=initialization">

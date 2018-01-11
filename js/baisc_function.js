@@ -230,27 +230,43 @@ var alias = [
     "waffles",
     "wok"
 ];
+//function display_full_categories() {
+////    var close = document.createElement('A');
+////    close.innerHTML = "close";
+////    
+////    close.onclick = function() {
+////        document.getElementById('searchresult').style.visibility='hidden';
+////    };
+//    document.getElementById("searchresult").innerHTML = "<a onclick=\""+"document.getElementById('searchresult').style.visibility='hidden'"+"\">close</a><br>";
+////    document.getElementById("searchresult").appendChild(close);
+//    for(var i = 0;alias[i];++i){
 
-function display_info_box(info) {
+//        document.getElementById("searchresult").innerHTML += '<input type="checkbox" name="price" class="category_check" value="'+alias[i]+'"> '+titles[i]+'|'
+//
+//    }
+////    document.getElementById('searchresult').style.visibility='visible';
+//}
 
-}
+//function display_info_box(info) {
+//
+//}
+//
+//function display_weather_forecast(weather_forecast) {
+//
+//}
+//
+//function display_restaurants(restaurants, filter) {
+//
+//}
+//
+//function display_sightseeings(sightseeings) {
+//
+//}
 
-function display_weather_forecast(weather_forecast) {
-
-}
-
-function display_restaurants(restaurants, filter) {
-
-}
-
-function display_sightseeings(sightseeings) {
-
-}
-
-function display_possible_pages(results) {
-    var possibleresult = "";
-    for(var i in results) {
-        possibleresult += results[i].id + " <a>"+results[i].title+"</a> " + results[i].score + "<br>"; 
-    }
-    document.getElementById("possibleresult").innerHTML = possibleresult;
-}
+//function display_possible_pages(results) {
+//    var possibleresult = "";
+//    for(var i in results) {
+//        possibleresult += results[i].id + " <a>"+results[i].title+"</a> " + results[i].score + "<br>"; 
+//    }
+//    document.getElementById("possibleresult").innerHTML = possibleresult;
+//}
