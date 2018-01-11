@@ -7,6 +7,7 @@ var currentMarker;
 var detailFlag = false;
 var matchedFlag = false;
 var reviewFlag = false;
+var noMatchFlag = false;
 
 function getCoordinates(jsonResponse) {
     return jsonResponse["results"][0]["geometry"]["location"];
@@ -120,7 +121,7 @@ function search_place(name, lat, lon) {
     var request = {
         query:name,
         location: location,
-        radius: 500,
+        radius: 5000,
         type:'food'
     };
     service.textSearch(request, merge);
@@ -216,36 +217,24 @@ function getDetail(placeId, marker) {
 
 
 
-function fusion(yelp_restaurant,google_restaurant) {
+function fusion(yelp_restaurant,google_restaurant,nomatch=false) {
     console.log("start fusion");
     console.log(yelp_restaurant);
     console.log(google_restaurant);
 
     var br = "<br>";
     var sl = "/";
-    //data from google place
-    var name = google_restaurant["name"];
-    var address = google_restaurant["formatted_address"];
-    var google_rating = google_restaurant["rating"];
-    var google_url = "<a href='"+google_restaurant["url"]+"'>google</a>";
-    var website = google_restaurant["website"];
-    var google_phone = google_restaurant["international_phone_number"];
-    var google_photos = google_restaurant["photos"];
-    var google_reviews = google_restaurant["reviews"];
-    var google_open;
-    if("opening_hours" in google_restaurant){
-        google_open = google_restaurant["opening_hours"]["periods"];
-    }else{
-        google_open = [];
-    }
-
-
-    //data from yelp
+    
+     //data from yelp
     var categories = "";
     for(var i in yelp_restaurant["categories"]){
         categories += yelp_restaurant["categories"][i]["title"] + ", ";
     }
     var yelp_url = "<a href='"+yelp_restaurant["url"]+"'>yelp</a>";
+    var yelp_address = "";
+    for(var i in yelp_restaurant.location.display_address) {
+        yelp_address += yelp_restaurant.location.display_address[i]+" ";
+    }
     var price_level = yelp_restaurant["price"];
     var yelp_rating = yelp_restaurant["rating"];
     var yelp_phone = yelp_restaurant["phone"];
@@ -256,6 +245,36 @@ function fusion(yelp_restaurant,google_restaurant) {
     }else{
         yelp_open = [];
     }
+    
+    //data from google place
+    var name = yelp_restaurant.name;
+    var google_url = "";
+    var google_phone = yelp_phone;
+    var address = yelp_address;
+    var google_rating=0;
+    var website ="";
+    var google_photos = [];
+    var google_reviews = [];
+    if(!nomatch){
+         name = google_restaurant["name"];
+     address = google_restaurant["formatted_address"];
+     google_rating = google_restaurant["rating"];
+     google_url = "<a href='"+google_restaurant["url"]+"'>google</a>";
+     website = "<a href='"+google_restaurant["website"]+"'>Website</a>";
+     google_phone = google_restaurant["international_phone_number"];
+     google_photos = google_restaurant["photos"];
+    var google_reviews = google_restaurant["reviews"];
+    var google_open;
+    if("opening_hours" in google_restaurant){
+        google_open = google_restaurant["opening_hours"]["periods"];
+    }else{
+        google_open = [];
+    }
+    }
+    
+
+
+   
     
 
     var reviews = "";
@@ -281,15 +300,17 @@ function fusion(yelp_restaurant,google_restaurant) {
 
     }
     for(var i in yelp_photos) {
-        imgs += "<div class='item'><img src='"+yelp_photos[i]+"'></div>";
+        if(nomatch && i==1)  imgs += "<div class='item active'><img src='"+yelp_photos[i]+"'></div>";
+        else imgs += "<div class='item'><img src='"+yelp_photos[i]+"'></div>";
     }
     var carousel = '<div id="myCarousel" class="carousel slide" data-ride="carousel"> <div class="carousel-inner">'+imgs+'</div><a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span><span class="sr-only">Previous</span></a><a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span><span class="sr-only">Next</span></a></div>';
     var imgs = "";
-
+    var open_text = "";
     if(!("opening_hours" in google_restaurant)){
         //bucket open 
         var open = [[],[],[],[],[],[],[]];
         var close = [[],[],[],[],[],[],[]];
+        var weekday = ["Sunday","Monday","Tuesday","Wednesday","Thurday","Friday","Saturday"];
         for(var i in google_open) {
             open[google_open[i].open.day].push(google_open[i].open.time);
             close[google_open[i].close.day].push(google_open[i].close.time)
@@ -303,22 +324,33 @@ function fusion(yelp_restaurant,google_restaurant) {
         for(var i in open) {
             open[i]=_.union(open[i]);
             close[i]=_.union(close[i]);
+            open_text += weekday[i]+ " ";
+            for(var j in open[i]) {
+                open_text += open[i][j].slice(0,2)+":"+open[i][j].slice(2);
+            }
+            open_text += " - ";
+             for(var k in close[i]) {
+                open_text += close[i][k].slice(0,2)+":"+close[i][k].slice(2);
+            }
+            open_text += br;
+            
         }
-
+        
+        
         console.log(open);
         console.log(close);
 
     }else{
-        var open_text = "";
+        
         for(var i in google_restaurant["opening_hours"]["weekday_text"]) {
             open_text += google_restaurant["opening_hours"]["weekday_text"][i]+br;
         }
     }
     var review_btn = "<a id='review_btn'>Reviews</a><div id='reviews'></div>";
-    console.log(google_restaurant["opening_hours"].weekday_text);
+//    console.log(google_restaurant["opening_hours"].weekday_text);
     //    var open 
     //    google_phone.replace(/\s/g, '');
-    var content = "<b>"+name+"</b>" + br + address + br + google_phone + br +google_url+" , "+yelp_url +br + "Rating: "+(google_rating+yelp_rating)/2.+br + "Price: "+price_level+br +"Categories: "+categories+br+open_text+review_btn+carousel;
+    var content = "<b>"+name+"</b>" + br + address + br + google_phone + br +google_url+" , "+yelp_url+","+website +br + "Rating: "+(google_rating+yelp_rating)/(1+(!nomatch?1:0))+br + "Price: "+price_level+br +"Categories: "+categories+br+open_text+review_btn+carousel;
 
 
     infowindow.setContent(content);
@@ -332,6 +364,7 @@ function fusion(yelp_restaurant,google_restaurant) {
     matchedFlag = false;
     detailFlag = false;
     reviewFlag = false;
+    noMatchFlag = false;
 }
 
 
@@ -427,7 +460,7 @@ function merge(results, status, pagination) {
                 //                console.log(newAddress2);
                 //                console.log("jaccard: "+jaccard);
                 //                console.log("jaccard2: "+jaccard2);
-                if((0.3*jaccard+0.7*jaccard2)>0.3) {
+                if((0.3*jaccard+0.7*jaccard2)>0.2) {
                     possibleResult.push({"restaurant":results[i],"j1":jaccard,"j2":jaccard2});
                     //                    correspondJaccard.push({"j1":jaccard,"j2":jaccard2});
                 }
@@ -444,16 +477,30 @@ function merge(results, status, pagination) {
         if(possibleResult.length>=1) {
             matchedFlag = true;
             match_restaurant = possibleResult[0];
-        }
-
-        if(matchedFlag && detailFlag && reviewFlag) {
+            if(matchedFlag && detailFlag && reviewFlag) {
             pre_fusion(currentRestaurantDetail,match_restaurant);
         }
+        }else{
+            alert("no match");
+            noMatchFlag = true;
+            if(noMatchFlag && detailFlag && reviewFlag){
+                fusion(currentRestaurantDetail,{},true);
+            }
+        }
+
+        
         //            console.log(correspondJaccard);
         //        console.log("#restaurants "+results.length);
         //        if (pagination.hasNextPage) {
         //            pagination.nextPage();
         //        }
+    }
+    else if(status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS){
+        alert("no match");
+            noMatchFlag = true;
+            if(noMatchFlag && detailFlag && reviewFlag){
+                fusion(currentRestaurantDetail,{},true);
+            }
     }
 }
 
@@ -542,6 +589,10 @@ function createRestaurantMarker2(lat,lon,name,restaurant) {
             if(matchedFlag && detailFlag && reviewFlag) {
                 pre_fusion(currentRestaurantDetail,match_restaurant);
             }
+            
+            if(noMatchFlag && detailFlag && reviewFlag){
+                fusion(currentRestaurantDetail,{},true);
+            }
         });
 
         getReviews(restaurant["id"],function(jsonResponse) {
@@ -549,6 +600,10 @@ function createRestaurantMarker2(lat,lon,name,restaurant) {
             yelp_reviews = jsonResponse;
             if(matchedFlag && detailFlag && reviewFlag) {
                 pre_fusion(currentRestaurantDetail,match_restaurant);
+            }
+            
+            if(noMatchFlag && detailFlag && reviewFlag){
+                fusion(currentRestaurantDetail,{},true);
             }
         });
 
