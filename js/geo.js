@@ -52,15 +52,7 @@ function searchnearby(lat, lng) {
                 recommendations += "<a onclick='inverse_geocode("+jsonResponse["geonames"][i]["lat"]+","+jsonResponse["geonames"][i]["lng"]+",[set_address])'><b>"+jsonResponse["geonames"][i]["name"]+"</b>,"
                     +"distance: "+ (Math.round((getDistanceFromLatLonInKm(jsonResponse["geonames"][i]["lat"],jsonResponse["geonames"][i]["lng"],lat,lng))*100)/100)+" km"
                     +"</a><br>";
-//                var a = document.createElement('A');
-//                a.innerHTML = jsonResponse["geonames"][i]["name"]+","
-//                    +jsonResponse["geonames"][i]["lat"]+","+
-//                    jsonResponse["geonames"][i]["lng"];
-//                a.onclick = function() {
-//                    console.log(jsonResponse["geonames"][i]["lat"]+","+
-//                    jsonResponse["geonames"][i]["lng"]);
-//                };
-//                document.getElementById("recommendation").appendChild(a);
+
             }
 
             document.getElementById("recommendation").innerHTML = recommendations;
@@ -88,7 +80,5 @@ function auto_searchnearby() {
 
 function searchnearbyByAddress(jsonResponse) {
     var coordiantes = getCoordinates(jsonResponse);
-    //    var lat = jsonResponse["results"][0]["geometry"]["location"]["lat"];
-    //        var lng = jsonResponse["results"][0]["geometry"]["location"]["lng"];
     searchnearby(coordiantes["lat"], coordiantes["lng"]);
 }

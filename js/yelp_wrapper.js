@@ -98,10 +98,7 @@ function search_restaurants(lat,lon, radius,price="1,2,3,4",categories="chinese"
                     moreButton.disabled = true;
                     search_restaurants(lat,lon,radius,price,categories,offset+jsonResponse["businesses"].length);
                 };
-                //                moreButton.addEventListener('click', function() {
-                //                    moreButton.disabled = true;
-                //                    search_restaurants(lat,lon,radius,categories,offset+jsonResponse["businesses"].length);
-                //                });
+                
             }
         }
     };		

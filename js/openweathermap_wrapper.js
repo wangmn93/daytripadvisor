@@ -1,44 +1,3 @@
-
-//function request_weatherforecast(city, date) {}
-
-//request weather forecast by city name
-//function getWeather() {
-//    var city = "stuttgart";
-//    var xhttp = new XMLHttpRequest();
-//    xhttp.onreadystatechange = function() {
-//        if (this.readyState == 4 && this.status == 200) {
-//            // Typical action to be performed when the document is ready:
-//            var jsonResponse = JSON.parse(xhttp.responseText);
-//            //            var ref_date = new Date("2017-01-01");
-//            //            var filtered_list = filter_weather_forecast(jsonResponse["list"],ref_date);
-//            //            console.log(filtered_list);
-//            console.log(jsonResponse);
-//            var weather = [["time","temperature"]];
-//            var detail = "";
-//            for(var i =0;i<5;i++) {
-//                var t = new Date(jsonResponse["list"][i].dt*1000);
-//                //                t.setSeconds( jsonResponse["list"][i].dt );
-//                weather.push([t.toLocaleDateString(),jsonResponse["list"][i].temp.day-273.15]);
-//            }
-//            console.log(weather);
-//            var data = google.visualization.arrayToDataTable(weather);
-//
-//            var options = {
-//                title: 'Weather forecast',
-//                curveType: 'function',
-//                legend: { position: 'bottom' }
-//            };
-//
-//            var chart = new google.visualization.LineChart(document.getElementById('weatherchart'));
-//
-//            chart.draw(data, options);
-//
-//        }
-//    };
-//    //other request format???
-//    xhttp.open("GET", "https://cors-anywhere.herokuapp.com/"+"http://samples.openweathermap.org/data/2.5/forecast/daily?q="+city+"&appid=6f55331d038a49fb7d958810010e4b78", true);
-//    xhttp.send();
-//}
 //get weather forecast from darksky
 function getWeather2(lat,lng) {
     //    var city = "stuttgart";
@@ -95,6 +54,7 @@ function getWeather2(lat,lng) {
                 var clear = 0;
                 var cloud = 0;
                 var rain = 0;
+                var snow=0;
                 //                var main;
                 var row=[key,"avg","","","","",""];
                 for(var t in aggregation[key]) {
@@ -107,15 +67,16 @@ function getWeather2(lat,lng) {
                     if(aggregation[key][t].weather[0].main == "Rain") rain +=1;
                     if(aggregation[key][t].weather[0].main == "Clouds") cloud +=1;
                     if(aggregation[key][t].weather[0].main == "Clear") clear +=1;
+                    if(aggregation[key][t].weather[0].main == "Snow") snow +=1;
 
                 }
                 
-                daily[key] = {"avg_temp":(avg_temp/Object.keys(aggregation[key]).length),"avg_wind":avg_wind/Object.keys(aggregation[key]).length,"avg_humidity":avg_humidity/Object.keys(aggregation[key]).length,"temp":(temp),"desc":desc,"rain":(Math.round((rain/Object.keys(aggregation[key]).length)*100)/100),"cloud":(Math.round((cloud/Object.keys(aggregation[key]).length)*100)/100),"clear":(Math.round((clear/Object.keys(aggregation[key]).length)*100)/100)};
+                daily[key] = {"avg_temp":(avg_temp/Object.keys(aggregation[key]).length),"avg_wind":avg_wind/Object.keys(aggregation[key]).length,"avg_humidity":avg_humidity/Object.keys(aggregation[key]).length,"temp":(temp),"desc":desc,"rain":(Math.round((rain/Object.keys(aggregation[key]).length)*100)/100),"cloud":(Math.round((cloud/Object.keys(aggregation[key]).length)*100)/100),"clear":(Math.round((clear/Object.keys(aggregation[key]).length)*100)/100),"snow":(Math.round((snow/Object.keys(aggregation[key]).length)*100)/100)};
 //                daily[key].push({"score":0.6*daily[key].clear+0.3*daily[key].cloud+0.1*daily[key].rain});
                 weather2.push([key,daily[key].avg_temp,daily[key].avg_wind,daily[key].rain]);
-                row[1] = (Math.round((daily[key].avg_temp)*100)/100)+" Celsius<br>"+(Math.round((daily[key].avg_wind)*100)/100)+" m/s<br>"+daily[key].avg_humidity+" % Humidity<br>"+daily[key].rain+" Rain/ "+daily[key].cloud + " Clouds/ "+daily[key].clear +" Clear";
+                row[1] = (Math.round((daily[key].avg_temp)*100)/100)+" Celsius<br>"+(Math.round((daily[key].avg_wind)*100)/100)+" m/s<br>"+daily[key].avg_humidity+" % Humidity<br>"+daily[key].rain+" Rain/ "+daily[key].cloud + " Clouds/ "+daily[key].clear +" Clear/ "+daily[key].snow +" Snow";
                 table.addRows([row]);
-                score_list.push({index:index,date:key,score:0.6*daily[key].clear+0.3*daily[key].cloud+0.1*daily[key].rain,avg_temp:daily[key].avg_temp});
+                score_list.push({index:index,date:key,score:0.5*daily[key].clear+0.3*daily[key].cloud+0.2*daily[key].snow+0.1*daily[key].rain,avg_temp:daily[key].avg_temp});
                 index+=1;
             }
             
@@ -168,7 +129,6 @@ var tab = new google.visualization.Table(document.getElementById('weatherchart')
 
         }
     };
-    //other request format???
     xhttp.open("GET", "https://cors-anywhere.herokuapp.com/"+"http://api.openweathermap.org/data/2.5/forecast?lat="+lat+"&lon="+lng+"&appid=6f55331d038a49fb7d958810010e4b78", true);
     xhttp.send();
 }
@@ -179,15 +139,4 @@ function request_weather(jsonResponse) {
 }
 
 
-//filter weather list by date,  remove weather forecast before reference date
-//function filter_weather_forecast(weather_list, ref_date) {
-//    var new_list = [];
-//    for(var i in weather_list){
-//        var dt_txt = weather_list[i]["dt_txt"];
-//        var temp = dt_txt.split(" ");
-//        var date = new Date(temp[0]);
-//        if(date > ref_date) new_list.push(weather_list[i]);
-//        //                var time = temp[1];
-//    }
-//    return new_list;
-//}
+
