@@ -4,11 +4,11 @@ Project Daytrip Adviosr
 Group WLJ
 
 Configuration:
-  1. Install Apache2
+  1. Install Apache2 and run it
      https://httpd.apache.org/
-  2. Install Google Chrome Browser
+  2. Install Google Chrome Browser(Other browser may also work)
      https://www.google.com/chrome/browser/desktop/index.html?brand=CHBD&gclid=CjwKCAiAoqXQBRA8EiwAIIOWsouMnYrOwiOlxrscXHvD5AiTPMiHfnojAaKcbZ-Ujv7ieNYTe4S0HRoCEnQQAvD_BwE
-  3. Clone this repo into your localhost folder
+  3. Clone this repository into your localhost folder
   4. Visit 127.0.0.1/daytripadvisor
   
 User Guide:
