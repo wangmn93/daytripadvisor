@@ -584,6 +584,9 @@ function createRestaurantMarker2(lat,lon,name,restaurant) {
             if(matchedFlag && detailFlag && reviewFlag) {
                 pre_fusion(currentRestaurantDetail,match_restaurant);
             }
+            if(noMatchFlag && detailFlag && reviewFlag){
+                fusion(currentRestaurantDetail,{},true);
+            }
         });
 
         getReviews(restaurant["id"],function(jsonResponse) {
@@ -591,6 +594,9 @@ function createRestaurantMarker2(lat,lon,name,restaurant) {
             yelp_reviews = jsonResponse;
             if(matchedFlag && detailFlag && reviewFlag) {
                 pre_fusion(currentRestaurantDetail,match_restaurant);
+            }
+             if(noMatchFlag && detailFlag && reviewFlag){
+                fusion(currentRestaurantDetail,{},true);
             }
         });
 
